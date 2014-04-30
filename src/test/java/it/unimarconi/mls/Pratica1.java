@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Guido Barbaglia
+ * @author simone murzilli
  */
 public class Pratica1 extends TestCase {
 
     public void testGenerate() {
-        List<List<Integer>> out = generate(5);
+        List<List<Integer>> out = generate();
         System.out.println("Ci sono "+ out.size() + " liste differenti.");
         for (List<Integer> l : out) {
-            System.out.print("[X0 = " + l.get(0) + "]: ");
+            System.out.print("[X0 = " + l.get(0) + "] [" + l.size() +"]: ");
             for (int j = 0; j < l.size(); j++) {
                 System.out.print(l.get(j));
                 if (j < l.size() - 1)
@@ -24,11 +24,13 @@ public class Pratica1 extends TestCase {
         }
     }
 
-    public List<List<Integer>> generate(Integer b) {
+    public List<List<Integer>> generate() {
 
         /** Genera il parametro a come a = q mod m */
-        Integer a = GeneratoreMoltiplicativo.generateA(8, 5, 1).get(0);
-        Integer m = 29;
+        Integer a = GeneratoreMoltiplicativo.generateA(8, 3, 1).get(0);
+        Integer m = (int) Math.pow(2, 9);
+        System.out.println("a: " + a);
+        System.out.println("m: " + m);
         List<Integer> xs = GeneratoreMoltiplicativo.generateX(m);
         List<Integer> memory = null;
         List<List<Integer>> out = new ArrayList<List<Integer>>();
