@@ -1,8 +1,6 @@
 package it.unimarconi.mls;
 
-import com.sun.deploy.util.ArrayUtil;
 import junit.framework.TestCase;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,13 +40,12 @@ public class Pratica2 extends TestCase {
     public void testGenerateExponential() {
         Integer a = 3;
         //Integer m = (int) Math.pow(2, 12);
-        Integer m = (int) Math.pow(2, 4);
+        Integer m = (int) Math.pow(2, 9);
         System.out.println(m);
         Integer x0 = 1;
         Integer avg = 30;
         List<Double> l = generateExponential(a, x0, m, avg);
         double sum = 0.0;
-        double s2 = 0.0;
         System.out.println(l.size());
         for (Double d : l) {
             sum += d;
@@ -61,7 +58,7 @@ public class Pratica2 extends TestCase {
     public void testGenerateKErl() {
         Integer a = 3;
         //Integer m = (int) Math.pow(2, 12);
-        Integer m = (int) Math.pow(2, 6);
+        Integer m = (int) Math.pow(2, 9);
         Integer x0 = 1;
         Integer avg = 30;
         Integer k = 3;
@@ -83,6 +80,7 @@ public class Pratica2 extends TestCase {
 
     /* generate between 0 and 1 */
     public static List<Double> generateRn(int a, int x0, int m) {
+        //System.out.println("generateRn: "  + a + " | "+ x0 + " | "+  m );
         List<Double> l1 = new ArrayList<Double>();
         List<Double> l2 = new ArrayList<Double>();
         double next = x0;
@@ -103,58 +101,75 @@ public class Pratica2 extends TestCase {
         return l;
     }
 
-    public List<Double> generateExponential2(int a, int x0, int m, int avg) {
-        List<Double> l = new ArrayList<Double>();
-        List<Double> rns = generateRn(a, x0, m);
-        double lambda = 1.0 / avg;
-        for(Double rn : rns)
-            l.add(-avg * Math.log(rn));
-        return l;
-    }
-
     public List<Double> generateKErl(int a, int x0, int m, int avg, int k) {
-        double p = 1.0;
+
         List<Double> result = new ArrayList<Double>();
         List<Double> X = new ArrayList<Double>();
         List<Double> l = new ArrayList<Double>();
         List<List<Double>> exps = new ArrayList<List<Double>>();
-        for(int kindex=0; kindex < k; kindex++) {
-            List<Double> exp = generateExponential(a, x0, m, avg/k);
+
+        int[] xos = new int[]{5,9,67};
+        for(int i=0; i < k; i++) {
+           // System.out.println("i: " + i);
+            //List<Double> exp = generateExponential(a, xos[i], m, avg/k);
+            List<Double> exp = generateRn(a, xos[i], m);
+            //Collections.sort(exp);
             exps.add(exp);
+            double sum = 0.0;
+            for (Double d : exp) {
+                sum += d;
+            }
+            System.out.println("Media exp: "+ (sum / exp.size()));
             printR(exp);
         }
-        // sommo
-        //for (int i =0; i < exps.get(0).size(); i++){
-        //    X.add(exps.get(0).get(i) + exps.get(1).get(i) + exps.get(2).get(i));
-        //}
-        // p = 1
-        List<Double> ps = new ArrayList<Double>();
-        for (int i = 0 ; i < exps.size() ; i++) {
-            for ( int j=0; j < exps.get(i).size(); j++) {
-                p = p * exps.get(i).get(j);
-                System.out.println(p);
-                ps.add(p);
-                if (p == 0) {
-                    System.out.println("0");
-                    return null;
-                } else {
-                    double ts = -(avg / k);
-                    result.add(ts * Math.log(p));
-                }
-            }
+
+        List<Double> X_SUM = new ArrayList<Double>();
+        List<Double> X_PROD = new ArrayList<Double>();
+        double p = 1.0;
+        double avgk = -avg / k;
+        for (int i = 0 ; i < exps.get(0).size() ; i++) {
+            Double prod = exps.get(0).get(i) * exps.get(1).get(i) * exps.get(2).get(i);
+            //System.out.println("generateRn: " + prod + " | " + exps.get(0).get(i) + " | "+  exps.get(1).get(i) + " | "+exps.get(2).get(i) );
+            X_PROD.add((avgk) * Math.log(prod));
+
+            Double sumlog = Math.log(exps.get(0).get(i)) + Math.log(exps.get(1).get(i)) + Math.log(exps.get(2).get(i));
+            //System.out.println("generateRn: " + sumlog + " | " + exps.get(0).get(i) + " | "+  exps.get(1).get(i) + " | "+exps.get(2).get(i) );
+            X_SUM.add((avgk) * sumlog);
         }
-        printR(result);
+        //printR(X);
+        System.out.println("print output");
+        printR(X_SUM);
+        printR(X_PROD);
+        erlangfdit(X_PROD);
+        return X_SUM;
+    }
 
+    public List<Double> erlangfdit(List<Double> t) {
+        List<Double> l = new ArrayList<Double>();
+        double k = 3.0;
+        double mu = 1.0;
+        Collections.sort(t);
+        for (int i = 0 ; i < t.size() ; i++) {
+            double uno = Math.pow(k * mu, k);
+            double due = Math.exp(-k * mu * t.get(i)) / 2;
+            double tre = Math.pow(t.get(i), 2);
+            System.out.println(uno + " | " + due + " | " + tre);
+            l.add( uno * due * tre );
+        }
+        System.out.println("erlangfdit: " +  printR(l));
 
-        return result;
+        return l;
     }
 
     public List<Double> generateExponential(int a, int x0, int m, int avg) {
+        //System.out.println("generateExponential: " + a + " | "+ x0 + " | "+  m + " | "+ avg );
         List<Double> l = new ArrayList<Double>();
         List<Double> rns = generateRn(a, x0, m);
+        //System.out.println("generateRn: " + printR(rns));
         double lambda = 1.0 / avg;
-        for(Double rn : rns)
+        for(Double rn : rns) {
             l.add((-1 / lambda) * Math.log(rn));
+        }
         return l;
     }
 
@@ -172,8 +187,9 @@ public class Pratica2 extends TestCase {
         return zs;
     }
 
-    private void printR(List<Double> l) {
-//        Collections.sort(l);
+
+    private String printR(List<Double> l) {
+        //Collections.sort(l);
         String s = "l = c(";
         for (int i = 0 ; i < l.size() ; i++) {
             s += l.get(i);
@@ -182,6 +198,7 @@ public class Pratica2 extends TestCase {
         }
         s += "); summary(l); var(l);";
         System.out.println(s);
+        return s;
     }
 
 }
