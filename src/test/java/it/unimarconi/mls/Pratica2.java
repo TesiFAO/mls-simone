@@ -67,8 +67,19 @@ public class Pratica2 extends TestCase {
         for (Double d : l) {
             sum += d;
         }
+        double mean = (sum / l.size());
+
+        double sumsq = 0;
+        for (Double d : l) {
+            sumsq = sumsq + ((d-mean) * (d-mean));
+        }
+        double variance = (float) sumsq /  l.size();
+        double sd = Math.sqrt(variance);
         System.out.println("Sum: "+ sum);
-        System.out.println("Media: "+ (sum / l.size()));
+        System.out.println("Media: "+ mean);
+        System.out.println("Varianza: "+ variance);
+        System.out.println("Standard deviation: "+ sd);
+
         printR(l);
     }
 
