@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author simone murzilli
  */
-public class Pratica1 extends TestCase {
+public class Pratica1Junit extends TestCase {
 
     public void testGenerate() {
         List<List<Integer>> out = generate();
@@ -22,15 +22,57 @@ public class Pratica1 extends TestCase {
             }
             System.out.println();
         }
+
+        int b = 6;
+        int vsize = (int) Math.pow(2, (b-3)) -1;
+        System.out.println("vsize: " + vsize);
+        for(int v=0; v <= vsize; v++ ) {
+            System.out.println((8 * v ) + 1);
+            System.out.println((8 * v ) + 3);
+        }
+
+        System.out.println("---------------------");
+        for(int v=0; v <= vsize; v++ ) {
+            System.out.println((8 * v ) + 5);
+            System.out.println((8 * v ) + 7);
+        }
+
     }
 
     public List<List<Integer>> generate() {
 
-        /** Genera il parametro a come a = q mod m */
-        Integer a = GeneratoreMoltiplicativo.generateA(8, 3, 1).get(0);
-        Integer m = (int) Math.pow(2, 9);
-        System.out.println("a: " + a);
-        System.out.println("m: " + m);
+        Integer b = 5;
+        Integer m = (int) Math.pow(2, b);
+        //Integer x0 = 1;
+        Integer a = GeneratoreMoltiplicativo.generateA(8, 3, 110).get(0);
+        List<Integer> as = GeneratoreMoltiplicativo.generateA(8, 3, 110);
+
+
+        //List<Integer> as = new ArrayList<Integer>();
+       // as.add(3);
+       // as.add(5);
+
+        /*List<Integer> memory = null;
+        List<List<Integer>> out = new ArrayList<List<Integer>>();
+        Integer differentLists = 1;
+        for (Integer a : as ) {
+            System.out.println("a: " + a);
+            List<Integer> l = GeneratoreMoltiplicativo.generate(a, x0, m);
+            //System.out.println("l: " + l);
+
+            if (memory == null) {
+                memory = l;
+                out.add(l);
+            }
+            if(!l.equals(memory)) {
+                differentLists++;
+                out.add(l);
+            } else if (l.equals(memory) && differentLists > 1) {
+               break;
+            }
+        } */
+
+
         List<Integer> xs = GeneratoreMoltiplicativo.generateX(m);
         List<Integer> memory = null;
         List<List<Integer>> out = new ArrayList<List<Integer>>();

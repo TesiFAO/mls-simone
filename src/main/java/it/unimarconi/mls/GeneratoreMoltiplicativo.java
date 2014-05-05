@@ -25,7 +25,7 @@ public class GeneratoreMoltiplicativo {
     public static List<Integer> generateA(Integer m, Integer q, Integer values) {
         List<Integer> l = new ArrayList<Integer>();
         for (int i = 0 ; i < values ; i++)
-            l.add(i * m + q);
+            l.add(i * 8 + q);
         return l;
     }
 

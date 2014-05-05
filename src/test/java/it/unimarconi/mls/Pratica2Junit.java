@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Guido Barbaglia
  */
-public class Pratica2 extends TestCase {
+public class Pratica2Junit extends TestCase {
 
     public void testGenerateRn() {
         Integer a = 3;
