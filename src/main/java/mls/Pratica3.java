@@ -19,6 +19,13 @@ public class Pratica3 {
     private int k;
     private int[] xos;
 
+    public Pratica3(int a, int x0, int m) {
+        this.setA(a);
+        this.setX0(x0);
+        this.setM(m);
+    }
+
+
     public Pratica3(int a, int x0, int m, int min, int max) {
         this.setA(a);
         this.setX0(x0);
@@ -42,37 +49,26 @@ public class Pratica3 {
         this.setAvg(avg);
     }
 
+    public List<Double> generaRn() {
+        List<Double> l = Util.generaRns(this.getA(), this.getX0(), this.getM());
+        System.out.println("--Rn--");
+        System.out.println(l);
+        Util.calcolaStatistiche(l, 0.1);
+        return l;
+    }
+
     public List<Double> generaRange() {
         List<Double> l = Util.generaRange(this.getA(), this.getX0(), this.getM(), this.getMin(), this.getMax());
         System.out.println("--Range--");
         System.out.println(l);
-        double min = Collections.min(l);
-        double max = Collections.max(l);
-        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, 5.0, min, max);
-        for(Double key: numeroOccorrenze.keySet()) {
-            System.out.print(numeroOccorrenze.get(key) + ",");
-        }
-        System.out.println();
-        System.out.println("OCCORENZE: " + numeroOccorrenze);
+        Util.calcolaStatistiche(l, 2.0);
         return l;
     }
 
     public List<Double> generaExponential() {
         System.out.println("--Exponential--");
         List<Double> l = Util.generaExponential(this.getA(), this.getX0(), this.getM(), this.getAvg());
-        double min = Collections.min(l);
-        double max = Collections.max(l);
-        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, 5.0, min, max);
-        for(Double key: numeroOccorrenze.keySet()) {
-            System.out.print(numeroOccorrenze.get(key) + ",");
-        }
-        System.out.println();
-        System.out.println("OCCORENZE: " + numeroOccorrenze);
-        double media =  Util.calcolaMedia(l);
-        double varianza =  Util.calcolaVarianza(l, media);
-        System.out.println(l);
-        System.out.println("MEDIA: " + media);
-        System.out.println("VARIANZA: " + varianza);
+        Util.calcolaStatistiche(l, 2.0);
         return l;
     }
 
@@ -82,47 +78,44 @@ public class Pratica3 {
         List<Double> l = Util.generaKErl(this.getA(), this.getM(), this.getK(), this.getAvg(), this.getXos());
         System.out.println("--K-Erlangiana--");
         System.out.println(l);
-        double min = Collections.min(l);
-        double max = Collections.max(l);
-        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, 5.0, min, max);
-        for(Double key: numeroOccorrenze.keySet()) {
-            System.out.print(numeroOccorrenze.get(key) + ",");
-        }
-        System.out.println();
-        System.out.println("OCCORENZE: " + numeroOccorrenze);
-
-        double media =  Util.calcolaMedia(l);
-        double varianza =  Util.calcolaVarianza(l, media);
-        System.out.println("MEDIA: " + media);
-        System.out.println("VARIANZA: " + varianza);
+        Util.calcolaStatistiche(l, 5.0);
         return l;
     }
 
 
-
-
     public static void main(String args[]) {
-        int a = 3;
+        /*int a = 3;
         int b = 12;
         int m = (int) Math.pow(2, b);
         int x0 = 1;
         int min = 60;
         int max = 80;
         double avg = 30.0;
+        int k = 3;*/
+
+        int a = 5;
+        int b = 12;
+        int m = (int) Math.pow(2, b);
+        int x0 = 1;
+        int min = 30;
+        int max = 50;
+        double avg = 20.0;
         int k = 3;
 
-        Pratica3 range = new Pratica3(a, x0, m, min, max);
-        List<Double> sequenceRange = range.generaRange();
+        List<Double> rn = new Pratica3(a, x0, m, min, max).generaRn();
         System.out.println();
 
-        Pratica3 exponential = new Pratica3(a, x0, m, avg);
-        List<Double> sequenceExp = exponential.generaExponential();
+        //List<Double> range = new Pratica3(a, x0, m, min, max).generaRange();
+        List<Double> range = new Pratica3(29, 7, m, 30, 50).generaRange();
         System.out.println();
 
+
+        //List<Double> sequenceExp = new Pratica3(a, x0, m, avg).generaExponential();
+        List<Double> sequenceExp = new Pratica3(37, 9, m, 20.0).generaExponential();
+        System.out.println();
 
         int[] xos = new int[]{5,9,67};
-        Pratica3 erlangiana = new Pratica3(a, m, avg, k, xos);
-        List<Double> sequenceErl = erlangiana.generaKErl();
+        List<Double> erl = new Pratica3(a, m, avg, k, xos).generaKErl();
         System.out.println();
     }
 

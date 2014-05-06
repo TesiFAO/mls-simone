@@ -261,6 +261,10 @@ public class Util {
         for(Double v : sequenza) {
             for(double range=min; range <= max; range+=step) {
                 double interval = range + step;
+                // check if it's >= 1.0 use floor
+                if ( step >= 1.0)
+                    interval =  Math.floor(range + step);
+
                 if ( v > range && v <= (interval) ) {
                     int count = 1;
                     if ( osservazioni.containsKey(interval) ) {
@@ -272,6 +276,65 @@ public class Util {
             }
         }
         return osservazioni;
+    }
+
+    public static SortedMap<Double, Double> frequezaRelativa(SortedMap<Double, Integer> osservazioni, double size) {
+        SortedMap<Double, Double> frequenzaRelativa = new TreeMap();
+        for(Double key: osservazioni.keySet()) {
+            frequenzaRelativa.put(key, osservazioni.get(key) / size);
+        }
+        return frequenzaRelativa;
+    }
+
+    public static SortedMap<Double, Double> densitaProbabilita(SortedMap<Double, Double> frequenzaRelativa) {
+        SortedMap<Double, Double> densitaProbabilita = new TreeMap();
+        for(Double key: frequenzaRelativa.keySet()) {
+            densitaProbabilita.put(key, frequenzaRelativa.get(key) / frequenzaRelativa.size());
+        }
+        return densitaProbabilita;
+    }
+
+
+    public static List<Double> distribuzioneCumulativa(SortedMap<Double, Double> frequenzaRelativa) {
+        List<Double> cumulativa = new ArrayList<Double>();
+        double sum = 0;
+        for(Double key: frequenzaRelativa.keySet()) {
+            sum =+ sum + frequenzaRelativa.get(key);
+            cumulativa.add(sum);
+        }
+        return cumulativa;
+    }
+
+    public static void calcolaStatistiche(List<Double> l, double step) {
+        double min = Collections.min(l);
+        double max = Collections.max(l);
+        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, step, min, max);
+        System.out.println("OCCORENZE: " + numeroOccorrenze);
+        printMap(numeroOccorrenze);
+        SortedMap<Double, Double> frequezaRelativa = Util.frequezaRelativa(numeroOccorrenze, l.size());
+        System.out.println("FREQUENZA RELATIVA: " + frequezaRelativa);
+        printMap(frequezaRelativa);
+        SortedMap<Double, Double> densitaProbabilita = Util.densitaProbabilita(frequezaRelativa);
+        System.out.println("DENSITA PROBABILITA': " + densitaProbabilita);
+        printMap(densitaProbabilita);
+        List<Double> cumulativa = Util.distribuzioneCumulativa(frequezaRelativa);
+        System.out.println("CUMULATIVA: " + cumulativa);
+        double media =  Util.calcolaMedia(l);
+        double varianza =  Util.calcolaVarianza(l, media);
+        System.out.println("MEDIA: " + media);
+        System.out.println("VARIANZA: " + varianza);
+    }
+
+    private static void printMap(Map map) {
+        int count = 0;
+        for(Object key: map.keySet()) {
+            count++;
+            System.out.print(map.get(key));
+            if ( count < map.size()) {
+                System.out.print(",");
+            }
+        }
+        System.out.println();
     }
 
 }
