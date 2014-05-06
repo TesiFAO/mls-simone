@@ -1,6 +1,8 @@
 package mls;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -91,6 +93,39 @@ public class Util {
         return l;
     }
 
+    public static String printR(List<Double> l, boolean sort) {
+        if ( sort ) Collections.sort(l);
+        String s = "l = c(";
+        for (int i = 0 ; i < l.size() ; i++) {
+            s += l.get(i);
+            if (i < l.size() - 1)
+                s += ",";
+        }
+        s += "); summary(l); var(l);";
+        System.out.println(s);
+        return s;
+    }
+
+    public static List<Integer> generaValoriCorollarioA(int b, int x0) {
+        List<Integer> l = new ArrayList<Integer>();
+        int size = (int) Math.pow(2, (b-3)) -1;
+        if ( x0 == 1 % 16 || x0 == 3 % 16 || x0 == 9 % 16 || x0 == 11 % 16) {
+            for (int v = 0; v <= size; v++) {
+                l.add((8 * v) + 1);
+                l.add((8 * v) + 3);
+            }
+        }
+        if ( x0 == 5 % 16 || x0 == 7 % 16 || x0 == 13 % 16 || x0 == 15 % 16) {
+            for (int v = 0; v <= size; v++) {
+                l.add((8 * v) + 5);
+                l.add((8 * v) + 7);
+            }
+        }
+        return l;
+
+    }
+
+
 
     public static List<Double> generaRange(int a, int x0, int m, int min, int max) {
         List<Double> rns = generaRns(a, x0, m);
@@ -101,7 +136,7 @@ public class Util {
     }
 
 
-    public static List<Double> generateExponential(int a, int x0, int m, int avg) {
+    public static List<Double> generaExponential(int a, int x0, int m, double avg) {
         //System.out.println("generateExponential: " + a + " | "+ x0 + " | "+  m + " | "+ avg );
         List<Double> l = new ArrayList<Double>();
         List<Double> rns = generaRns(a, x0, m);
@@ -111,6 +146,27 @@ public class Util {
             l.add((-1.0 / lambda) * Math.log(rn));
         }
         return l;
+    }
+
+    public static List<Double> generaKErl(int a, int m, int k, double avg, int[] xos ) {
+        //int[] xos = new int[]{5,9,67};
+        List<List<Double>> exps = new ArrayList<List<Double>>();
+        for(int i=0; i < k; i++) {
+            List<Double> exp = Util.generaRns(a, xos[i], m);
+            exps.add(exp);
+            //System.out.println("Media exp: "+ calcolaMedia(exp));
+        }
+        List<Double> X_SUM = new ArrayList<Double>();
+        List<Double> X_PROD = new ArrayList<Double>();
+        double p = 1.0;
+        double avgk = -avg / k;
+        for (int i = 0 ; i < exps.get(0).size() ; i++) {
+            //Double prod = exps.get(0).get(i) * exps.get(1).get(i) * exps.get(2).get(i);
+            //X_PROD.add((avgk) * Math.log(prod));
+            Double sumlog = Math.log(exps.get(0).get(i)) + Math.log(exps.get(1).get(i)) + Math.log(exps.get(2).get(i));
+            X_SUM.add((avgk) * sumlog);
+        }
+        return X_SUM;
     }
 
     public static void print_int(List<Integer> l) {
@@ -131,17 +187,42 @@ public class Util {
         System.out.println();
     }
 
+    public static double calcolaMedia(List<Double> l) {
+        double sum = 0.0;
+        for (Double d : l) {
+            sum += d;
+        }
+        double mean = (sum / l.size());
+        return mean;
+    }
+
+    public static double calcolaVarianza(List<Double> l, double media) {
+        double sumsq = 0;
+        for (Double d : l) {
+            sumsq = sumsq + ((d-media) * (d-media));
+        }
+        return (float) sumsq / l.size();
+    }
+
+    public static double calcolaStandardDeviation(double varianze) {
+        return Math.sqrt(varianze);
+    }
+
     public static double calcolaV(List<Double> yss, double n, double ps) {
         double v = 0.0;
         double nps = n * ps;
+//        nps = 164;
         for (int i = 0 ; i < yss.size() ; i++) {
+//            System.out.println("categoria " + i + " contiene " + yss.get(i) + " -> " + (Math.pow(yss.get(i) - nps, 2) / nps));
             v += Math.pow(yss.get(i) - nps, 2) / nps;
         }
-        System.out.println("nps: " + nps);
-        System.out.println("v: " + v);
-        System.out.println();
+//        System.out.println("nps: " + nps);
+//        System.out.println("v: " + v);
+//        System.out.println();
         return v;
     }
+
+
 
     public static double calcolaVseriale(List<Double> yss, double n, double ps) {
         double v = 0.0;
@@ -171,4 +252,6 @@ public class Util {
 //        System.out.println(df * cube);
         return (df * cube);
     }
+
+
 }

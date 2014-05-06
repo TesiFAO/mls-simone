@@ -1,13 +1,11 @@
 package mls;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Simone Murzilli
+ * Created by vortex on 5/6/14.
  */
-
-public class Pratica2 {
+public class Pratica3 {
 
     private int a;
     private int x0;
@@ -18,7 +16,7 @@ public class Pratica2 {
     private int k;
     private int[] xos;
 
-    public Pratica2(int a, int x0, int m, int min, int max) {
+    public Pratica3(int a, int x0, int m, int min, int max) {
         this.setA(a);
         this.setX0(x0);
         this.setM(m);
@@ -26,7 +24,7 @@ public class Pratica2 {
         this.setMax(max);
     }
 
-    public Pratica2(int a, int m, double avg, int k, int[] xos) {
+    public Pratica3(int a, int m, double avg, int k, int[] xos) {
         this.setA(a);
         this.setM(m);
         this.setAvg(avg);
@@ -34,7 +32,7 @@ public class Pratica2 {
         this.setXos(xos);
     }
 
-    public Pratica2(int a, int x0, int m, double avg) {
+    public Pratica3(int a, int x0, int m, double avg) {
         this.setA(a);
         this.setX0(x0);
         this.setM(m);
@@ -54,19 +52,26 @@ public class Pratica2 {
         double media =  Util.calcolaMedia(l);
         double varianza =  Util.calcolaVarianza(l, media);
         System.out.println(l);
+        System.out.println("MEDIA: " + media);
+        System.out.println("VARIANZA: " + varianza);
         return l;
     }
 
 
-   // public List<Double> generateKErl(int a, int x0, int m, int avg, int k) {
-   public List<Double> generaKErl() {
-       List<Double> l = Util.generaKErl(this.getA(), this.getM(), this.getK(), this.getAvg(), this.getXos());
-       System.out.println("--K-Erlangiana--");
-       double media =  Util.calcolaMedia(l);
-       double varianza =  Util.calcolaVarianza(l, media);
-       System.out.println(l);
-       return l;
+    // public List<Double> generateKErl(int a, int x0, int m, int avg, int k) {
+    public List<Double> generaKErl() {
+        List<Double> l = Util.generaKErl(this.getA(), this.getM(), this.getK(), this.getAvg(), this.getXos());
+        System.out.println("--K-Erlangiana--");
+        double media =  Util.calcolaMedia(l);
+        double varianza =  Util.calcolaVarianza(l, media);
+        System.out.println(l);
+        System.out.println("MEDIA: " + media);
+        System.out.println("VARIANZA: " + varianza);
+        return l;
     }
+
+
+
 
     public static void main(String args[]) {
         int a = 3;
@@ -78,16 +83,16 @@ public class Pratica2 {
         double avg = 30.0;
         int k = 3;
 
-        Pratica2 range = new Pratica2(a, x0, m, min, max);
+        Pratica3 range = new Pratica3(a, x0, m, min, max);
         List<Double> sequenceRange = range.generaRange();
         System.out.println();
 
-        Pratica2 exponential = new Pratica2(a, x0, m, avg);
+        Pratica3 exponential = new Pratica3(a, x0, m, avg);
         List<Double> sequenceExp = exponential.generaExponential();
         System.out.println();
 
         int[] xos = new int[]{5,9,67};
-        Pratica2 erlangiana = new Pratica2(a, m, avg, k, xos);
+        Pratica3 erlangiana = new Pratica3(a, m, avg, k, xos);
         List<Double> sequenceErl = erlangiana.generaKErl();
         System.out.println();
     }
@@ -155,4 +160,6 @@ public class Pratica2 {
     public void setXos(int[] xos) {
         this.xos = xos;
     }
+
+
 }

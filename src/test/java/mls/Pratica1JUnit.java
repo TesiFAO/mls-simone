@@ -10,7 +10,7 @@ import java.util.List;
 public class Pratica1JUnit extends TestCase {
 
     public void testPratica1() {
-        int a = 3;
+      /*  int a = 3;
         int b = 9;
         Pratica1 p = new Pratica1(a, b);
 
@@ -19,5 +19,6 @@ public class Pratica1JUnit extends TestCase {
         assertEquals((int)Math.pow(2, b - 1), domain.size());
         for (List<Integer> l : domain)
             assertEquals((int)Math.pow(2, b - 2), l.size());
+            */
     }
 }

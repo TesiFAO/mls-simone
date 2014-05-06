@@ -11,7 +11,7 @@ import java.util.List;
 public class Pratica1Junit extends TestCase {
 
     public void testGenerate() {
-        List<List<Integer>> out = generate();
+       /* List<List<Integer>> out = generate();
         System.out.println("Ci sono "+ out.size() + " liste differenti.");
         for (List<Integer> l : out) {
             System.out.print("[X0 = " + l.get(0) + "] [" + l.size() +"]: ");
@@ -21,20 +21,20 @@ public class Pratica1Junit extends TestCase {
                     System.out.print(", ");
             }
             System.out.println();
-        }
+        } */
 
-        int b = 6;
+        int b = 9;
         int vsize = (int) Math.pow(2, (b-3)) -1;
         System.out.println("vsize: " + vsize);
         for(int v=0; v <= vsize; v++ ) {
-            System.out.println((8 * v ) + 1);
-            System.out.println((8 * v ) + 3);
+            System.out.print(((8 * v ) + 1) + "-");
+            System.out.print(((8 * v ) + 3) + "-");
         }
 
         System.out.println("---------------------");
         for(int v=0; v <= vsize; v++ ) {
-            System.out.println((8 * v ) + 5);
-            System.out.println((8 * v ) + 7);
+            System.out.print(((8 * v ) + 5) + "-");
+            System.out.print(((8 * v ) + 7) + "-");
         }
 
     }
@@ -44,8 +44,8 @@ public class Pratica1Junit extends TestCase {
         Integer b = 5;
         Integer m = (int) Math.pow(2, b);
         //Integer x0 = 1;
-        Integer a = GeneratoreMoltiplicativo.generateA(8, 3, 110).get(0);
-        List<Integer> as = GeneratoreMoltiplicativo.generateA(8, 3, 110);
+        //Integer a = GeneratoreMoltiplicativo.generateA(8, 3, 110).get(0);
+        //List<Integer> as = GeneratoreMoltiplicativo.generateA(8, 3, 110);
 
 
         //List<Integer> as = new ArrayList<Integer>();
@@ -73,7 +73,7 @@ public class Pratica1Junit extends TestCase {
         } */
 
 
-        List<Integer> xs = GeneratoreMoltiplicativo.generateX(m);
+        /*List<Integer> xs = GeneratoreMoltiplicativo.generateX(m);
         List<Integer> memory = null;
         List<List<Integer>> out = new ArrayList<List<Integer>>();
         Integer differentLists = 1;
@@ -91,7 +91,8 @@ public class Pratica1Junit extends TestCase {
                 break;
             }
         }
-        return out;
+        return out;*/
+        return null;
     }
 
     /**
