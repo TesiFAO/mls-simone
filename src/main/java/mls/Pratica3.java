@@ -52,7 +52,7 @@ public class Pratica3 {
     public List<Double> generaRn() {
         List<Double> l = Util.generaRns(this.getA(), this.getX0(), this.getM());
         System.out.println("--Rn--");
-        System.out.println(l);
+        //System.out.println(l);
         Util.calcolaStatistiche(l, 0.1);
         return l;
     }
@@ -60,7 +60,7 @@ public class Pratica3 {
     public List<Double> generaRange() {
         List<Double> l = Util.generaRange(this.getA(), this.getX0(), this.getM(), this.getMin(), this.getMax());
         System.out.println("--Range--");
-        System.out.println(l);
+        //System.out.println(l);
         Util.calcolaStatistiche(l, 2.0);
         return l;
     }
@@ -68,6 +68,7 @@ public class Pratica3 {
     public List<Double> generaExponential() {
         System.out.println("--Exponential--");
         List<Double> l = Util.generaExponential(this.getA(), this.getX0(), this.getM(), this.getAvg());
+        //System.out.println(l);
         Util.calcolaStatistiche(l, 2.0);
         return l;
     }
@@ -77,7 +78,7 @@ public class Pratica3 {
     public List<Double> generaKErl() {
         List<Double> l = Util.generaKErl(this.getA(), this.getM(), this.getK(), this.getAvg(), this.getXos());
         System.out.println("--K-Erlangiana--");
-        System.out.println(l);
+        //System.out.println(l);
         Util.calcolaStatistiche(l, 5.0);
         return l;
     }
