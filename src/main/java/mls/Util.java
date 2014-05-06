@@ -1,9 +1,6 @@
 package mls;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -253,5 +250,28 @@ public class Util {
         return (df * cube);
     }
 
+    /**
+     *
+     * @param sequenza sequenza da passa
+     * @param step step dei vari intervalli
+     * @return
+     */
+    public static SortedMap<Double, Integer> numeroOsservazioni(List<Double> sequenza, double step, double min, double max) {
+        SortedMap<Double, Integer> osservazioni = new TreeMap();
+        for(Double v : sequenza) {
+            for(double range=min; range <= max; range+=step) {
+                double interval = range + step;
+                if ( v > range && v <= (interval) ) {
+                    int count = 1;
+                    if ( osservazioni.containsKey(interval) ) {
+                        count = osservazioni.get(interval) + 1;
+                    }
+                    osservazioni.put(interval, count);
+                    break;
+                }
+            }
+        }
+        return osservazioni;
+    }
 
 }

@@ -1,6 +1,9 @@
 package mls;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.SortedMap;
 
 /**
  * Created by vortex on 5/6/14.
@@ -43,12 +46,28 @@ public class Pratica3 {
         List<Double> l = Util.generaRange(this.getA(), this.getX0(), this.getM(), this.getMin(), this.getMax());
         System.out.println("--Range--");
         System.out.println(l);
+        double min = Collections.min(l);
+        double max = Collections.max(l);
+        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, 5.0, min, max);
+        for(Double key: numeroOccorrenze.keySet()) {
+            System.out.print(numeroOccorrenze.get(key) + ",");
+        }
+        System.out.println();
+        System.out.println("OCCORENZE: " + numeroOccorrenze);
         return l;
     }
 
     public List<Double> generaExponential() {
         System.out.println("--Exponential--");
         List<Double> l = Util.generaExponential(this.getA(), this.getX0(), this.getM(), this.getAvg());
+        double min = Collections.min(l);
+        double max = Collections.max(l);
+        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, 5.0, min, max);
+        for(Double key: numeroOccorrenze.keySet()) {
+            System.out.print(numeroOccorrenze.get(key) + ",");
+        }
+        System.out.println();
+        System.out.println("OCCORENZE: " + numeroOccorrenze);
         double media =  Util.calcolaMedia(l);
         double varianza =  Util.calcolaVarianza(l, media);
         System.out.println(l);
@@ -62,9 +81,18 @@ public class Pratica3 {
     public List<Double> generaKErl() {
         List<Double> l = Util.generaKErl(this.getA(), this.getM(), this.getK(), this.getAvg(), this.getXos());
         System.out.println("--K-Erlangiana--");
+        System.out.println(l);
+        double min = Collections.min(l);
+        double max = Collections.max(l);
+        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, 5.0, min, max);
+        for(Double key: numeroOccorrenze.keySet()) {
+            System.out.print(numeroOccorrenze.get(key) + ",");
+        }
+        System.out.println();
+        System.out.println("OCCORENZE: " + numeroOccorrenze);
+
         double media =  Util.calcolaMedia(l);
         double varianza =  Util.calcolaVarianza(l, media);
-        System.out.println(l);
         System.out.println("MEDIA: " + media);
         System.out.println("VARIANZA: " + varianza);
         return l;
@@ -90,6 +118,7 @@ public class Pratica3 {
         Pratica3 exponential = new Pratica3(a, x0, m, avg);
         List<Double> sequenceExp = exponential.generaExponential();
         System.out.println();
+
 
         int[] xos = new int[]{5,9,67};
         Pratica3 erlangiana = new Pratica3(a, m, avg, k, xos);
