@@ -1,5 +1,6 @@
 package mls;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 
@@ -250,32 +251,53 @@ public class Util {
         return (df * cube);
     }
 
-    /**
-     *
-     * @param sequenza sequenza da passa
-     * @param step step dei vari intervalli
-     * @return
-     */
-    public static SortedMap<Double, Integer> numeroOsservazioni(List<Double> sequenza, double step, double min, double max) {
+
+    public static SortedMap<Double, Integer> numeroOsservazioni(List<Double> sequenza, double intervalli, double min, double max) {
         SortedMap<Double, Integer> osservazioni = new TreeMap();
+        double step = (max - min) / intervalli;
+        System.out.println("min: " + min);
+        System.out.println("max: " + max);
+        System.out.println("step: " + step);
+        System.out.println("intervalli: " + intervalli);
+        for(double range=min; range < max; range+=step) {
+            double interval = range + step;
+            double intervalMin = min + step;
+            osservazioni.put(intervalMin, 0);
+            osservazioni.put(interval, 0);
+        }
+
         for(Double v : sequenza) {
+            boolean added = false;
             for(double range=min; range <= max; range+=step) {
                 double interval = range + step;
-                // check if it's >= 1.0 use floor
-                if ( step >= 1.0)
-                    interval =  Math.floor(range + step);
-
+                double intervalMin = min + step;
                 if ( v > range && v <= (interval) ) {
-                    int count = 1;
-                    if ( osservazioni.containsKey(interval) ) {
-                        count = osservazioni.get(interval) + 1;
-                    }
-                    osservazioni.put(interval, count);
+                    incrementaContatore(osservazioni, interval);
+                    break;
+                }
+                else if ( v == min) {
+                    incrementaContatore(osservazioni, intervalMin);
                     break;
                 }
             }
         }
+
+        int sum = 0;
+        for(Object key: osservazioni.keySet()) {
+            sum += osservazioni.get(key);
+        }
+        System.out.println("Seq " + sequenza.size());
+        System.out.println("Total: " + sum);
+        System.out.println("osservazioni: " + osservazioni.size());
         return osservazioni;
+    }
+
+    private static void incrementaContatore(SortedMap<Double, Integer> osservazioni, Double key) {
+        int count = 1;
+        if ( osservazioni.containsKey(key) ) {
+            count = osservazioni.get(key) + 1;
+        }
+        osservazioni.put(key, count);
     }
 
     public static SortedMap<Double, Double> frequezaRelativa(SortedMap<Double, Integer> osservazioni, double size) {
@@ -286,16 +308,17 @@ public class Util {
         return frequenzaRelativa;
     }
 
-    public static SortedMap<Double, Double> densitaProbabilita(SortedMap<Double, Double> frequenzaRelativa) {
+    public static SortedMap<Double, Double> densitaProbabilita(SortedMap<Double, Double> frequenzaRelativa, double intervalli, double min, double max) {
         SortedMap<Double, Double> densitaProbabilita = new TreeMap();
+        double step = (max - min) / intervalli;
         for(Double key: frequenzaRelativa.keySet()) {
-            densitaProbabilita.put(key, frequenzaRelativa.get(key) / frequenzaRelativa.size());
+            densitaProbabilita.put(key, frequenzaRelativa.get(key) / step);
         }
         return densitaProbabilita;
     }
 
 
-    public static List<Double> distribuzioneCumulativa(SortedMap<Double, Double> frequenzaRelativa) {
+    public static List<Double> calcolaCumulata(SortedMap<Double, Double> frequenzaRelativa) {
         List<Double> cumulativa = new ArrayList<Double>();
         double sum = 0;
         for(Double key: frequenzaRelativa.keySet()) {
@@ -305,36 +328,72 @@ public class Util {
         return cumulativa;
     }
 
-    public static void calcolaStatistiche(List<Double> l, double step) {
+    public static void calcolaStatistiche(List<Double> l, double intervalli) {
         double min = Collections.min(l);
         double max = Collections.max(l);
-        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, step, min, max);
+        SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, intervalli, min, max);
         System.out.println("OCCORENZE: " + numeroOccorrenze);
-        printMap(numeroOccorrenze);
+        printHighcharts(numeroOccorrenze, min);
         SortedMap<Double, Double> frequezaRelativa = Util.frequezaRelativa(numeroOccorrenze, l.size());
         System.out.println("FREQUENZA RELATIVA: " + frequezaRelativa);
-        printMap(frequezaRelativa);
-        SortedMap<Double, Double> densitaProbabilita = Util.densitaProbabilita(frequezaRelativa);
+        printHighcharts(frequezaRelativa, min);
+        SortedMap<Double, Double> densitaProbabilita = Util.densitaProbabilita(frequezaRelativa, intervalli, min, max);
         System.out.println("DENSITA PROBABILITA': " + densitaProbabilita);
-        printMap(densitaProbabilita);
-        List<Double> cumulativa = Util.distribuzioneCumulativa(frequezaRelativa);
-        System.out.println("CUMULATIVA: " + cumulativa);
+        printHighcharts(densitaProbabilita, min);
+        List<Double> cumulata = Util.calcolaCumulata(frequezaRelativa);
+        System.out.println("CUMULATIVA: " + printHighchartsCumulata(cumulata));
         double media =  Util.calcolaMedia(l);
         double varianza =  Util.calcolaVarianza(l, media);
         System.out.println("MEDIA: " + media);
         System.out.println("VARIANZA: " + varianza);
     }
 
-    private static void printMap(Map map) {
+    private static void printHighcharts(Map map, double min) {
         int count = 0;
+        DecimalFormat df = new DecimalFormat("#0.00000");
+        String s = "data: [";
         for(Object key: map.keySet()) {
             count++;
-            System.out.print(map.get(key));
+            s += df.format(map.get(key));
             if ( count < map.size()) {
-                System.out.print(",");
+                s += (",");
             }
         }
-        System.out.println();
+        s += "]";
+
+
+        df = new DecimalFormat("#0");
+        String c = "categories: [";
+        count = 0;
+        String prec = df.format(min);
+        for(Object key: map.keySet()) {
+            count++;
+            //c += df.format(key);
+            c += "\"" + prec + "-" + df.format(key) + "\"";
+
+            prec = df.format(key);
+            if ( count < map.size()) {
+                c += ",";
+            }
+        }
+        c += "]";
+        System.out.println(c);
+        System.out.println(s);
     }
 
+
+    private static String printHighchartsCumulata(List<Double> l) {
+        int count = 0;
+        DecimalFormat df = new DecimalFormat("#0.00000");
+        String s = "data: [";
+        for(Double v : l) {
+            count++;
+            s += df.format(v);
+            if ( count < l.size()) {
+                s += (",");
+            }
+        }
+        s += "]";
+        return s;
+    }
 }

@@ -53,23 +53,22 @@ public class Pratica3 {
         List<Double> l = Util.generaRns(this.getA(), this.getX0(), this.getM());
         System.out.println("--Rn--");
         //System.out.println(l);
-        Util.calcolaStatistiche(l, 0.1);
+        Util.calcolaStatistiche(l, 10.0);
+        //Util.calcolaStatistiche(l, 10.0);
         return l;
     }
 
     public List<Double> generaRange() {
         List<Double> l = Util.generaRange(this.getA(), this.getX0(), this.getM(), this.getMin(), this.getMax());
         System.out.println("--Range--");
-        //System.out.println(l);
-        Util.calcolaStatistiche(l, 2.0);
+        Util.calcolaStatistiche(l, 10.0);
         return l;
     }
 
     public List<Double> generaExponential() {
         System.out.println("--Exponential--");
         List<Double> l = Util.generaExponential(this.getA(), this.getX0(), this.getM(), this.getAvg());
-        //System.out.println(l);
-        Util.calcolaStatistiche(l, 2.0);
+        Util.calcolaStatistiche(l, 25.0);
         return l;
     }
 
@@ -78,8 +77,7 @@ public class Pratica3 {
     public List<Double> generaKErl() {
         List<Double> l = Util.generaKErl(this.getA(), this.getM(), this.getK(), this.getAvg(), this.getXos());
         System.out.println("--K-Erlangiana--");
-        //System.out.println(l);
-        Util.calcolaStatistiche(l, 5.0);
+        Util.calcolaStatistiche(l, 20.0);
         return l;
     }
 
@@ -94,31 +92,58 @@ public class Pratica3 {
         double avg = 30.0;
         int k = 3;*/
 
-        int a = 5;
+        int a = 3;
         int b = 12;
         int m = (int) Math.pow(2, b);
         int x0 = 1;
-        int min = 30;
-        int max = 50;
-        double avg = 20.0;
+        int min = 60;
+        int max = 80;
+        double avg = 30.0;
         int k = 3;
 
-        List<Double> rn = new Pratica3(a, x0, m, min, max).generaRn();
-        System.out.println();
+        //List<Double> rn = new Pratica3(a, x0, m, min, max).generaRn();
+        //System.out.println();
 
         //List<Double> range = new Pratica3(a, x0, m, min, max).generaRange();
-        List<Double> range = new Pratica3(29, 7, m, 30, 50).generaRange();
-        System.out.println();
+        //System.out.println();
 
-
-        //List<Double> sequenceExp = new Pratica3(a, x0, m, avg).generaExponential();
-        List<Double> sequenceExp = new Pratica3(37, 9, m, 20.0).generaExponential();
-        System.out.println();
+        // List<Double> sequenceExp = new Pratica3(a, x0, m, avg).generaExponential();
+        //System.out.println();
 
         int[] xos = new int[]{5,9,67};
         List<Double> erl = new Pratica3(a, m, avg, k, xos).generaKErl();
         System.out.println();
     }
+
+
+    /**
+     *
+     * Rn
+     * occ:http://jsfiddle.net/v0rtex83/AFn5k/2/
+     * fr: http://jsfiddle.net/v0rtex83/x2pZ2/3/
+     * dp: http://jsfiddle.net/v0rtex83/kaka2/4/
+     * cum: http://jsfiddle.net/v0rtex83/zw4GK/2/
+     *
+     * Range
+     * http://jsfiddle.net/v0rtex83/R5XCq/4/
+     * http://jsfiddle.net/v0rtex83/QfXMd/3/
+     * http://jsfiddle.net/v0rtex83/8JbGU/2/
+     * http://jsfiddle.net/v0rtex83/9sZhv/2/
+     *
+     *
+     * Esponenziale:
+     * http://jsfiddle.net/v0rtex83/2ZNEK/1/
+     * http://jsfiddle.net/v0rtex83/Z4dJV/1/
+     * http://jsfiddle.net/v0rtex83/29XSC/1/
+     * http://jsfiddle.net/v0rtex83/kEB6W/1/
+     *
+     * Erlangiana:
+     * http://jsfiddle.net/v0rtex83/a2hAe/2/
+     * http://jsfiddle.net/v0rtex83/8dAfc/1s/
+     * http://jsfiddle.net/v0rtex83/WDEqw/1/
+     * http://jsfiddle.net/v0rtex83/H33NW/1/
+     *
+     */
 
     public int getA() {
         return a;
