@@ -28,7 +28,7 @@ public class Pratica4 {
 
         boolean[] out = new boolean[this.getProve()];
 
-        List<Double> rns = Util.generaRns(this.getA(), this.getX0(), this.getM());
+        List<Double> rns = Util.generaRn(this.getA(), this.getX0(), this.getM());
 
         double min = Util.calcolaChiQuadro(64.0, Util.Z25);
         double max = Util.calcolaChiQuadro(64.0, Util.Z75);

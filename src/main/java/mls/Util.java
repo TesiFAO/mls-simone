@@ -34,75 +34,30 @@ public class Util {
         return l;
     }
 
-    /**
-     * @param a  a
-     * @param x0 Seed
-     * @param m m=2^b
-     * @return Una sequenza pseudo-casuale con valori che sono compresi tra 0 ed 1
-     * <p/>
-     * Genera una sequenza di valori pseudo-casuali
-     * compresi tra 0 ed 1
-     * tramite generatore congruente moltiplicativo
-     */
-    public static List<Double> generaRns(int a, int x0, int m) {
-        //double m = Math.pow(2.0, b);
-        List<Double> l1 = new ArrayList<Double>();
-        List<Double> l2 = new ArrayList<Double>();
-        double next = x0;
-        while (!l1.contains(next)) {
-            l1.add(next);
-            next = (a * next) % m;
-        }
-        for (Double d : l1)
-            l2.add(d / m);
-        return l2;
-    }
-
-    /**
-     *
-     * MODIFICATA
-     *
-     * @param q
-     * @param modulo
-     * @param values Numero di valori da generare per la sequenza
-     * @return Una lista di valori interi
-     * <p/>
-     * Genera una sequenza valutando a=q*(mod m) (quivalente a a=m*t+q)
-     */
-    public static List<Integer> generaAs(int q, int modulo, int values) {
-        List<Integer> l = new ArrayList<Integer>();
-        for (int t = 0; t < values; t++)
-            l.add(modulo * t + q);
+    public static List<Double> generaRn(int a, int x0, int m) {
+        List<Integer> cm = generatoreCongruenteMoltiplicativo(a, x0, m);
+        List<Double> l = new ArrayList<Double>();
+        for (Integer v : cm)
+            l.add((double) v / m);
         return l;
     }
 
-    /**
-     *
-     * MODIFICATA
-     *
-     * @param m  valore di m
-     * @return   Lista contente valori dispari minori di m=2^b
-     * <p/>
-     * Genera una sequenza di numeri dispari che sono inferiori di m=2^b
-     */
-    public static List<Integer> generaXs(int m) {
-        List<Integer> l = new ArrayList<Integer>();
-        for (int i = 1; i < m; i += 2) l.add(i);
-        return l;
+    public static boolean controllaSequenzaRn(List<Double> l) {
+        for (Double v : l) {
+            if( v < 0 || v >= 1)
+                return false;
+        }
+        return true;
     }
 
-    public static String printR(List<Double> l, boolean sort) {
-        if ( sort ) Collections.sort(l);
-        String s = "l = c(";
-        for (int i = 0 ; i < l.size() ; i++) {
-            s += l.get(i);
-            if (i < l.size() - 1)
-                s += ",";
+    public static boolean controllaSequenza(List<Double> l, double min, double max) {
+        for (Double v : l) {
+            if( v <= min || v >= max)
+                return false;
         }
-        s += "); summary(l); var(l);";
-        System.out.println(s);
-        return s;
+        return true;
     }
+
 
     public static List<Integer> generaValoriCorollarioA(int b, int x0) {
         List<Integer> l = new ArrayList<Integer>();
@@ -120,86 +75,113 @@ public class Util {
             }
         }
         return l;
-
     }
 
+    public static List<Double> generaIntervallo(int a, int x0, int m, int min, int max) {
+        List<Double> rn = generaRn(a, x0, m);
+        List<Double> l = new ArrayList<Double>();
+        for(Double v : rn)
+            l.add(min + v * (max - min));
+        return l;
+    }
 
-
-    public static List<Double> generaRange(int a, int x0, int m, int min, int max) {
-        List<Double> rns = generaRns(a, x0, m);
+    public static List<Double> generaEsponenziale(int a, int x0, int m, double avg) {
+        List<Double> rns = generaRn(a, x0, m);
         List<Double> l = new ArrayList<Double>();
         for(Double rn : rns)
-            l.add(min + rn * (max - min));
+            l.add(-avg * Math.log(rn));
         return l;
     }
 
-
-    public static List<Double> generaExponential(int a, int x0, int m, double avg) {
-        //System.out.println("generateExponential: " + a + " | "+ x0 + " | "+  m + " | "+ avg );
-        List<Double> l = new ArrayList<Double>();
-        List<Double> rns = generaRns(a, x0, m);
-        //System.out.println("generateRn: " + printR(rns));
-        double lambda = 1.0 / avg;
-        for(Double rn : rns) {
-            l.add((-1.0 / lambda) * Math.log(rn));
-        }
-        return l;
-    }
-
-    public static List<Double> generaKErl(int a, int m, int k, double avg, int[] xos ) {
-        //int[] xos = new int[]{5,9,67};
+    public static List<Double> generaKErlangiana(int a, int m, int k, double avg, int[] xos ) {
         List<List<Double>> exps = new ArrayList<List<Double>>();
-        for(int i=0; i < k; i++) {
-            List<Double> exp = Util.generaRns(a, xos[i], m);
-            exps.add(exp);
-            //System.out.println("Media exp: "+ calcolaMedia(exp));
-        }
+
+        // generazione k sequenze Rn
+        for(int i=0; i < k; i++)
+            exps.add(Util.generaRn(a, xos[i], m));
+
+        // generazione sequenza k-erlangiana
         List<Double> X_SUM = new ArrayList<Double>();
-        List<Double> X_PROD = new ArrayList<Double>();
-        double p = 1.0;
         double avgk = -avg / k;
         for (int i = 0 ; i < exps.get(0).size() ; i++) {
-            //Double prod = exps.get(0).get(i) * exps.get(1).get(i) * exps.get(2).get(i);
-            //X_PROD.add((avgk) * Math.log(prod));
-            Double sumlog = Math.log(exps.get(0).get(i)) + Math.log(exps.get(1).get(i)) + Math.log(exps.get(2).get(i));
+            double sumlog = 0.0;
+            for (int j = 0; j < k; j++) {
+                sumlog += Math.log(exps.get(j).get(i));
+            }
             X_SUM.add((avgk) * sumlog);
         }
         return X_SUM;
     }
 
-    public static void print_int(List<Integer> l) {
-        for (int i = 0 ; i < l.size() ; i++) {
-            System.out.print(l.get(i));
-            if (i < l.size() - 1)
-                System.out.print(", ");
+    public static String print(int[] xos) {
+        String s = "";
+        for(int i = 0; i < xos.length; i++) {
+            s += xos[i];
+            if ( i < xos.length -1)
+                s += ",";
         }
-        System.out.println();
+        return s;
     }
 
-    public static void print_double(List<Double> l) {
-        for (int i = 0 ; i < l.size() ; i++) {
-            System.out.print(l.get(i));
-            if (i < l.size() - 1)
-                System.out.print(", ");
+    public static String printEsponenziale(List<Double> l, int a, double avg, int x0, boolean serie, boolean media) {
+        String s = "--Sequenza Esponenziale di media "+ avg +" [a=" + a + "]" + "[x0="+ x0 +"]";
+        if ( serie)
+            s += "\n" + l + "\n";
+        if  (media )
+            s += "Media: " + Util.calcolaMedia(l) + "\n";
+        System.out.println(s);
+        return s;
+    }
+
+    public static String printKErlangiana(List<Double> l, int a, int k, double avg, int[] xos, boolean serie, boolean media) {
+        String s = "--Sequenza "+ k +"-Erlangiana di media "+ avg +" [a=" + a + "]" + "[k=" + k +"] [X0s="+ Util.print(xos) +"]";
+        if ( serie)
+            s += "\n" + l + "\n";
+        if  (media )
+            s += "Media: " + Util.calcolaMedia(l) + "\n";
+        System.out.println(s);
+        return s;
+    }
+
+    public static String printSequenzaUniforme(List<Double> l, int a, int x0, double min, double max, boolean serie, boolean controllo) {
+        String s = "--Sequenza uniforme in ("+ min + "," + max +") [a=" + a + "]" + "[x0=" + x0 + "]";
+        if ( serie)
+            s += "\n" + l + "\n";
+        if  (controllo ) {
+            boolean c = Util.controllaSequenza(l, min, max);
+            s += "La sequenza e' compresa tra (" + min + "," + max + ") [" + c + "]\n";
         }
-        System.out.println();
+        System.out.println(s);
+        return s;
+    }
+
+    public static String printRn(List<Double> l, int a, int x0, boolean serie, boolean controllo) {
+
+        String s = "--Sequenza Rn [a=" + a + "]" + "[x0=" + x0 + "]";
+        if ( serie)
+            s += "\n" + l + "\n";
+        if  (controllo ) {
+            boolean c = Util.controllaSequenzaRn(l);
+            s += "La sequenza e' compresa tra [0,1) [" + c + "]\n";
+        }
+        System.out.println(s);
+        return s;
     }
 
     public static double calcolaMedia(List<Double> l) {
-        double sum = 0.0;
-        for (Double d : l) {
-            sum += d;
+        double somma = 0.0;
+        for (Double v : l) {
+            somma += v;
         }
-        double mean = (sum / l.size());
-        return mean;
+        return (somma / l.size());
     }
 
     public static double calcolaVarianza(List<Double> l, double media) {
-        double sumsq = 0;
-        for (Double d : l) {
-            sumsq = sumsq + ((d-media) * (d-media));
+        double sumsq = 0.0;
+        for (Double v : l) {
+            sumsq = sumsq + ((v-media) * (v-media));
         }
-        return (float) sumsq / l.size();
+        return sumsq / l.size();
     }
 
     public static double calcolaStandardDeviation(double varianze) {
@@ -255,49 +237,25 @@ public class Util {
     public static SortedMap<Double, Integer> numeroOsservazioni(List<Double> sequenza, double intervalli, double min, double max) {
         SortedMap<Double, Integer> osservazioni = new TreeMap();
         double step = (max - min) / intervalli;
-        System.out.println("min: " + min);
-        System.out.println("max: " + max);
-        System.out.println("step: " + step);
-        System.out.println("intervalli: " + intervalli);
-        for(double range=min; range < max; range+=step) {
-            double interval = range + step;
-            double intervalMin = min + step;
-            osservazioni.put(intervalMin, 0);
-            osservazioni.put(interval, 0);
-        }
+        double intervalMin = min + step;
+        osservazioni.put(intervalMin, 0);
+        for(double range=min; range < max; range+=step)
+            osservazioni.put(range + step, 0);
 
         for(Double v : sequenza) {
-            boolean added = false;
             for(double range=min; range <= max; range+=step) {
                 double interval = range + step;
-                double intervalMin = min + step;
                 if ( v > range && v <= (interval) ) {
-                    incrementaContatore(osservazioni, interval);
+                    osservazioni.put(interval, osservazioni.get(interval) + 1);
                     break;
                 }
                 else if ( v == min) {
-                    incrementaContatore(osservazioni, intervalMin);
+                    osservazioni.put(intervalMin, osservazioni.get(intervalMin) + 1);
                     break;
                 }
             }
         }
-
-        int sum = 0;
-        for(Object key: osservazioni.keySet()) {
-            sum += osservazioni.get(key);
-        }
-        System.out.println("Seq " + sequenza.size());
-        System.out.println("Total: " + sum);
-        System.out.println("osservazioni: " + osservazioni.size());
         return osservazioni;
-    }
-
-    private static void incrementaContatore(SortedMap<Double, Integer> osservazioni, Double key) {
-        int count = 1;
-        if ( osservazioni.containsKey(key) ) {
-            count = osservazioni.get(key) + 1;
-        }
-        osservazioni.put(key, count);
     }
 
     public static SortedMap<Double, Double> frequezaRelativa(SortedMap<Double, Integer> osservazioni, double size) {
@@ -322,7 +280,7 @@ public class Util {
         List<Double> cumulativa = new ArrayList<Double>();
         double sum = 0;
         for(Double key: frequenzaRelativa.keySet()) {
-            sum =+ sum + frequenzaRelativa.get(key);
+            sum += frequenzaRelativa.get(key);
             cumulativa.add(sum);
         }
         return cumulativa;
@@ -332,20 +290,21 @@ public class Util {
         double min = Collections.min(l);
         double max = Collections.max(l);
         SortedMap<Double, Integer> numeroOccorrenze = Util.numeroOsservazioni(l, intervalli, min, max);
-        System.out.println("OCCORENZE: " + numeroOccorrenze);
-        printHighcharts(numeroOccorrenze, min);
-        SortedMap<Double, Double> frequezaRelativa = Util.frequezaRelativa(numeroOccorrenze, l.size());
-        System.out.println("FREQUENZA RELATIVA: " + frequezaRelativa);
-        printHighcharts(frequezaRelativa, min);
-        SortedMap<Double, Double> densitaProbabilita = Util.densitaProbabilita(frequezaRelativa, intervalli, min, max);
-        System.out.println("DENSITA PROBABILITA': " + densitaProbabilita);
-        printHighcharts(densitaProbabilita, min);
-        List<Double> cumulata = Util.calcolaCumulata(frequezaRelativa);
-        System.out.println("CUMULATIVA: " + printHighchartsCumulata(cumulata));
+        SortedMap<Double, Double> frequenzaRelativa = Util.frequezaRelativa(numeroOccorrenze, l.size());
+        SortedMap<Double, Double> densitaProbabilita = Util.densitaProbabilita(frequenzaRelativa, intervalli, min, max);
+        List<Double> cumulata = Util.calcolaCumulata(frequenzaRelativa);
+        System.out.println("Occorrenze: " + numeroOccorrenze.values());
+        System.out.println("Frequenza Relativa: " + frequenzaRelativa.values());
+        System.out.println("Densita' di probabilita': " + densitaProbabilita.values());
+        System.out.println("Cumulata: " + cumulata);
+        //printHighcharts(numeroOccorrenze, min);
+        //printHighcharts(frequezaRelativa, min);
+        //printHighcharts(densitaProbabilita, min);
+        //System.out.println("Cumulata: " + printHighchartsCumulata(cumulata));
         double media =  Util.calcolaMedia(l);
         double varianza =  Util.calcolaVarianza(l, media);
-        System.out.println("MEDIA: " + media);
-        System.out.println("VARIANZA: " + varianza);
+        System.out.println("Media: " + media);
+        System.out.println("Varianza: " + varianza + "\n");
     }
 
     private static void printHighcharts(Map map, double min) {
