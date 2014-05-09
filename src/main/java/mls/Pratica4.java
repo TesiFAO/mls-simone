@@ -13,68 +13,83 @@ public class Pratica4 {
     private int a;
     private int x0;
     private int m;
+    private int b;
     private double d;
     private int prove;
 
-    public Pratica4(int a, int x0, int m, double d, int prove) {
+    /*public Pratica4(int a, int x0, int m, double d, int prove) {
        this.setA(a);
        this.setX0(x0);
        this.setM(m);
        this.setD(d);
        this.setProve(prove);
+    } */
+
+    public Pratica4(int a, int x0, int b, double d, int prove) {
+        this.setA(a);
+        this.setX0(x0);
+        this.setM((int) Math.pow(2.0, b));
+        this.setD(d);
+        this.setProve(prove);
+        this.setB(b);
     }
 
-    public boolean[] uniformita() {
+    public void testUniformita() {
+        System.out.println("--Il Test di Uniformita' dato [a=" + this.getA() + "]" + "[x0=" + this.getX0() + "]" + "[b=" + this.getB() + "]"+ "[d=" + this.getD() + "]"+ "[prove=" + this.getProve()+ "]");
 
-        boolean[] out = new boolean[this.getProve()];
+        List<List<Integer>> sequenze = Util.creaSequenze(this.getD(), this.getA(), this.getX0(), this.getM(), this.getProve());
 
-        List<Double> rns = Util.generaRn(this.getA(), this.getX0(), this.getM());
-
-        double min = Util.calcolaChiQuadro(64.0, Util.Z25);
-        double max = Util.calcolaChiQuadro(64.0, Util.Z75);
-
-        List<Double> ds = new ArrayList<Double>();
-        for (Double rn : rns)
-            ds.add(Math.floor(this.getD() * rn));
-
-        int chunks = this.getProve();
-        List<List<Double>> testSet = new ArrayList<List<Double>>();
-        double size = ds.size() / this.getProve();
-        for (int i = 0 ; i < chunks ; i++) {
-            List<Double> chunk = new ArrayList<Double>();
-            for (int j = i * (int)size ; j < (i + 1) * (int)size ; j++) {
-                chunk.add(ds.get(j));
+        int successi = 0;
+        for (List<Integer> sottoSequenza : sequenze ) {
+            LinkedHashMap<Integer, Double> frequenze = new LinkedHashMap<Integer, Double>();
+            for (Integer v : sottoSequenza) {
+                double c = 1.0;
+                if ( frequenze.containsKey(v))
+                    c += frequenze.get(v);
+                frequenze.put(v, c);
             }
-            testSet.add(chunk);
+
+            List<Double> l = new ArrayList<Double>();
+            for (Double v : frequenze.values())
+                l.add(v);
+
+            double v = Util.calcolaV(l, sottoSequenza.size(), 1 / this.getD());
+            if( Util.controllaV(v, this.getD()-1)) successi++;
+         }
+
+        System.out.println("Risulta Accettabile " + successi + " volte su " +  sequenze.size() + "\n");
+    }
+
+    public void testSeriale() {
+        System.out.println("--Il Test Seriale dato [a=" + this.getA() + "]" + "[x0=" + this.getX0() + "]" + "[b=" + this.getB() + "]"+ "[d=" + this.getD() + "]"+ "[prove=" + this.getProve()+ "]");
+
+        List<List<Integer>> sequenze = Util.creaSequenze(this.getD(), this.getA(), this.getX0(), this.getM(), this.getProve());
+        int dd = (int) Math.pow(this.getD(), 2);
+
+        int successi = 0;
+        for (List<Integer> sequenza : sequenze ) {
+            int[][] matrix1 = new int[(int) this.getD()][(int) this.getD()];
+            int[][] matrix2 = new int[(int) this.getD()][(int) this.getD()];
+
+            for (int i = 0; i < sequenza.size() - 1; i+=2) {
+                matrix1[sequenza.get(i)][sequenza.get(i + 1)] = matrix1[sequenza.get(i)][sequenza.get(i + 1)] + 1;
+            }
+            for (int i = 1; i < sequenza.size() - 2; i+=2) {
+                matrix2[sequenza.get(i)][sequenza.get(i + 1)] = matrix1[sequenza.get(i)][sequenza.get(i + 1)] + 1;
+            }
+
+            double v1 = Util.calcolaVSeriale(matrix1, (double) sequenza.size()/2, (double) 1/dd);
+            double v2 = Util.calcolaVSeriale(matrix2, (double) sequenza.size()/2, (double) 1/dd);
+
+            if ( Util.controllaV(v1, dd-1) ) successi++;
+            if ( Util.controllaV(v2, dd-1) ) successi++;
         }
 
-        for (int k = 0 ; k < chunks ; k++) {
-            Collections.sort(testSet.get(k));
-            LinkedHashMap<Double, Double> freqs = new LinkedHashMap<Double, Double>();
-            for (Double tmp : testSet.get(k)) {
-                try {
-                    freqs.put(tmp, 1.0 + freqs.get(tmp));
-                } catch (Exception e) {
-                    if (tmp <= this.getD())
-                        freqs.put(tmp, 1.0);
-                }
-            }
-            List<Double> yss = new ArrayList<Double>();
-            for (Double pippo : freqs.values())
-                yss.add(pippo);
-            double v = Util.calcolaV(yss, size, 0.015625);
-            if (v > min && v < max) {
-                out[k] = true;
-            } else {
-                out[k] = false;
-            }
-        }
-
-        return out;
+        System.out.println("Risulta Accettabile " + successi + " volte su " +  sequenze.size() * 2 );
     }
 
     public static void main(String args[]) {
-        int a = 65;
+        /*int a = 65;
         int x0 = 3;
         int b = 19;
         double d = 64.0;
@@ -84,8 +99,23 @@ public class Pratica4 {
         boolean[] proveUniformita = u.uniformita();
         for(boolean tests : proveUniformita)
             System.out.println(tests);
+         */
 
+        int b = 19;
+        int a = 85;
+        int x0 = 3;
+        int d = 64;
+        int prove = 3;
+        Pratica4 u = new Pratica4(a, x0, b, d, prove);
+        u.testUniformita();
+        u.testSeriale();
+
+        Pratica4 s = new Pratica4(a, x0, b, d, prove);
+        //s.seriale();
     }
+
+
+
 
     public int getA() {
         return a;
@@ -125,5 +155,13 @@ public class Pratica4 {
 
     public void setProve(int prove) {
         this.prove = prove;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public void setB(int b) {
+        this.b = b;
     }
 }

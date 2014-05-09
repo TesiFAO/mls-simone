@@ -11,11 +11,14 @@ import java.util.*;
 public class Util {
 
     /** Variabili statiche usate nel test Chi-Quadro **/
-    public static double Z25 = -0.674;
-    public static double Z75 = 0.674;
-    public static double Z99 = 2.326;
-    public static double Z10 = -1.282;
-    public static double Z90 = 1.282;
+    public static double Z25 = -0.674; // accettabile
+    public static double Z75 = 0.674;  // accettabile
+
+    public static double Z10 = -1.282; //quasi sosteptto P5-P10
+    public static double Z90 = 1.282;  //quasi sosteptto P90-95
+
+    public static double Z1 = -2.326; // rigettato
+    public static double Z99 = 2.326;  //rigettato
 
     /**
      * @param a  a
@@ -101,16 +104,16 @@ public class Util {
             exps.add(Util.generaRn(a, xos[i], m));
 
         // generazione sequenza k-erlangiana
-        List<Double> X_SUM = new ArrayList<Double>();
+        List<Double> x_sum = new ArrayList<Double>();
         double avgk = -avg / k;
         for (int i = 0 ; i < exps.get(0).size() ; i++) {
             double sumlog = 0.0;
             for (int j = 0; j < k; j++) {
                 sumlog += Math.log(exps.get(j).get(i));
             }
-            X_SUM.add((avgk) * sumlog);
+            x_sum.add((avgk) * sumlog);
         }
-        return X_SUM;
+        return x_sum;
     }
 
     public static String print(int[] xos) {
@@ -155,6 +158,18 @@ public class Util {
         return s;
     }
 
+    public static void printMatrix(int[][] matrix) {
+        for (int i = 0 ; i < matrix.length ; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > 0)
+                    System.out.print("X ");
+                else
+                    System.out.print("  ");
+            }
+            System.out.println("| ");
+        }
+    }
+
     public static String printRn(List<Double> l, int a, int x0, boolean serie, boolean controllo) {
 
         String s = "--Sequenza Rn [a=" + a + "]" + "[x0=" + x0 + "]";
@@ -188,40 +203,33 @@ public class Util {
         return Math.sqrt(varianze);
     }
 
-    public static double calcolaV(List<Double> yss, double n, double ps) {
+    public static double calcolaV(List<Double> l, double n, double ps) {
         double v = 0.0;
         double nps = n * ps;
-//        nps = 164;
-        for (int i = 0 ; i < yss.size() ; i++) {
-//            System.out.println("categoria " + i + " contiene " + yss.get(i) + " -> " + (Math.pow(yss.get(i) - nps, 2) / nps));
-            v += Math.pow(yss.get(i) - nps, 2) / nps;
-        }
-//        System.out.println("nps: " + nps);
-//        System.out.println("v: " + v);
-//        System.out.println();
+        for (int i = 0 ; i < l.size() ; i++)
+            v += Math.pow(l.get(i) - nps, 2) / nps;
         return v;
     }
 
-
-
-    public static double calcolaVseriale(List<Double> yss, double n, double ps) {
-        double v = 0.0;
-        double nps = (n / 4096.0) / 2;
-        nps = (43000.0 / 2.0) / 4096.0;
-//        nps = 164;
-        double v1 = 0;
-        for (int i = 0 ; i < yss.size() ; i++) {
-            System.out.println("categoria " + i + " contiene " + yss.get(i) + " -> " + (Math.pow(yss.get(i) - nps, 2) / nps));
-            v += Math.pow(yss.get(i) - nps, 2) / nps;
-            if  ( yss.get(i) <= 0)
-                v1 += Math.pow(yss.get(i) - nps, 2) / nps;
+    public static double calcolaVSeriale(int[][] matrix, double size, double ps) {
+        List<Double> l = new ArrayList<Double>();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                l.add(new Double(matrix[i][j]));
+            }
         }
-        System.out.println("nps: " + nps);
-        System.out.println("v: " + v);
-        System.out.println("v1: " + v1);
-        System.out.println();
-        return v;
+        return Util.calcolaV(l, size, ps);
     }
+
+    public static boolean controllaV(double v, double df) {
+        double z25 = Util.calcolaChiQuadro(df, Util.Z25);
+        double z75 = Util.calcolaChiQuadro(df, Util.Z75);
+
+        if ( v >= z25 && v <= z75 ) return true;
+        return false;
+    }
+
+
 
     public static double calcolaChiQuadro(double df, double za) {
         double a = 1.0;
@@ -354,5 +362,40 @@ public class Util {
         }
         s += "]";
         return s;
+    }
+
+    public static void printMatrix(double[][] matrix) {
+        int countzero = 0;
+        int  pieni = 0;
+        System.out.println("--------------------");
+        for(int i=63; i>= 0; i--){
+            for(int j=0; j < 64; j++) {
+                if ( matrix[i][j] == 0 ) {System.out.print(" "); countzero +=1;}
+                else {System.out.print("O");  pieni += 1; }
+                //System.out.print(matrix[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println("zero: " + countzero);
+        System.out.println("pieni: " + pieni);
+    }
+
+    public static List<List<Integer>> creaSequenze(double d, int a, int x0, int m, int parti ) {
+        List<Double> rns = Util.generaRn(a, x0, m);
+        List<Integer> zn = new ArrayList<Integer>();
+        for (Double rn : rns)
+            zn.add((int) Math.floor(d * rn));
+
+        List<List<Integer>> sequenze = new ArrayList<List<Integer>>();
+        double size = zn.size() / parti;
+        int index = 0;
+        for(int i=0; i < parti; i++) {
+            if ( i < parti - 1)
+                sequenze.add(zn.subList(index, index + (int) size));
+            else
+                sequenze.add(zn.subList(index, zn.size()));
+            index += size;
+        }
+        return sequenze;
     }
 }

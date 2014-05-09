@@ -1,8 +1,9 @@
 package mls;
 
-/**
- * Created by vortex on 5/8/14.
+/*
+ * @author Simone Murzilli
  */
+
 public class MLS {
 
     public static void main(String[] args) {
@@ -66,8 +67,14 @@ public class MLS {
     }
 
     private static void pratica4() {
-
+        int b = 19;
+        int a = 85;
+        int x0 = 3;
+        int d = 64;
+        int prove = 3;
+        Pratica4 u = new Pratica4(a, x0, b, d, prove);
+        u.testUniformita();
+        u.testSeriale();
     }
-
 
 }
