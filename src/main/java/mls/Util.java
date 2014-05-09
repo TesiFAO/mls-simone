@@ -226,14 +226,14 @@ public class Util {
         double z75 = Util.calcolaChiQuadro(df, Util.Z75);
 
         if ( v >= z25 && v <= z75 )  {
-            System.out.println(z25 + " <= " + v + " <= " + z75 + " e' Accetabile");
+            System.out.println(z25 + " <= " + v + " <= " + z75 + " Accettabile");
             return true;
         }
         else if ( v < z25 ) {
-            System.out.println(v + " < " + z25 + " e' Rigettato");
+            System.out.println(v + " < " + z25 + " Rigetto");
         }
         else if ( v > z75 )  {
-            System.out.println(v + " > " + z75 + " e' Rigettato");
+            System.out.println(v + " > " + z75 + " Rigetto");
         };
         return false;
     }

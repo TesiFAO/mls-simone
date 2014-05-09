@@ -26,17 +26,27 @@ public class Pratica4 {
         this.setB(b);
     }
 
+    public void applicaTest() {
+        testUniformita();
+        testSeriale();
+    }
+
     public void testUniformita() {
         System.out.println("--Il Test di Uniformita' dato [a=" + this.getA() + "]" + "[x0=" + this.getX0() + "]" + "[b=" + this.getB() + "]"+ "[d=" + this.getD() + "]"+ "[prove=" + this.getProve()+ "]");
 
+        // generazione delle sequenze
         List<List<Integer>> sequenze = Util.creaSequenze(this.getD(), this.getA(), this.getX0(), this.getM(), this.getProve());
 
         int successi = 0;
         for (List<Integer> sottoSequenza : sequenze ) {
 
+            // calcolo delle frequenze della sottosequenza
             List<Double> l = Util.calcolaFrequenze(sottoSequenza);
 
+            // calcolo di V
             double v = Util.calcolaV(l, sottoSequenza.size(), 1 / this.getD());
+
+            // controllo V con d-1 gradi di liberta'
             if( Util.controllaV(v, this.getD()-1)) {
                 successi++;
             }
@@ -50,33 +60,47 @@ public class Pratica4 {
     public void testSeriale() {
         System.out.println("--Il Test Seriale dato [a=" + this.getA() + "]" + "[x0=" + this.getX0() + "]" + "[b=" + this.getB() + "]"+ "[d=" + this.getD() + "]"+ "[prove=" + this.getProve()+ "]");
 
+        // generazione sequenze
         List<List<Integer>> sequenze = Util.creaSequenze(this.getD(), this.getA(), this.getX0(), this.getM(), this.getProve());
         int dd = (int) Math.pow(this.getD(), 2);
 
         int successi = 0;
         for (List<Integer> sequenza : sequenze ) {
-            int[][] matrix1 = new int[(int) this.getD()][(int) this.getD()];
-            int[][] matrix2 = new int[(int) this.getD()][(int) this.getD()];
 
-            for (int i = 0; i < sequenza.size() - 1; i+=2) {
-                matrix1[sequenza.get(i)][sequenza.get(i + 1)] = matrix1[sequenza.get(i)][sequenza.get(i + 1)] + 1;
-            }
-            for (int i = 1; i < sequenza.size() - 2; i+=2) {
-                matrix2[sequenza.get(i)][sequenza.get(i + 1)] = matrix1[sequenza.get(i)][sequenza.get(i + 1)] + 1;
-            }
-
-            double v1 = Util.calcolaVSeriale(matrix1, (double) sequenza.size()/2, (double) 1/dd);
-            double v2 = Util.calcolaVSeriale(matrix2, (double) sequenza.size()/2, (double) 1/dd);
-
+            // sequenza (Z0, Z1)
+            System.out.print("Sequenza (Z0, Z1) ");
+            double v1 = calcolaVSeriale(sequenza, 0, (int) this.getD());
             if ( Util.controllaV(v1, dd-1) )  {
                 successi++;
             }
+
+            // sequenza (Z1, Z2)
+            System.out.print("Sequenza (Z1, Z2) ");
+            double v2 = calcolaVSeriale(sequenza, 1, (int) this.getD());
             if ( Util.controllaV(v2, dd-1) ) {
                 successi++;
             }
         }
+        System.out.println("Risulta Accettabile " + successi + " volte su " +  sequenze.size() * 2 + "\n");
+    }
 
-        System.out.println("Risulta Accettabile " + successi + " volte su " +  sequenze.size() * 2 );
+    private double calcolaVSeriale(List<Integer> sequenza, int serie, int d) {
+        int[][] matrix = new int[d][d];
+
+        // calcolo matrice delle frequenze
+        for (int i = serie; i < sequenza.size() - 1; i+=2) {
+            matrix[sequenza.get(i)][sequenza.get(i + 1)] = matrix[sequenza.get(i)][sequenza.get(i + 1)] + 1;
+        }
+
+        // calcolo array dalla matrice delle frequenze da passare al metodo per il calcolo di V
+        List<Double> l = new ArrayList<Double>();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                l.add(new Double(matrix[i][j]));
+            }
+        }
+
+        return Util.calcolaV(l, (double) sequenza.size()/2, (double) 1/Math.pow(d,2));
     }
 
 
@@ -88,6 +112,7 @@ public class Pratica4 {
         int prove = 3;
         Pratica4 u1 = new Pratica4(a, x0, b, d, prove);
         u1.testUniformita();
+        u1.testSeriale();
 
         b = 19;
         a = 15;
@@ -96,16 +121,8 @@ public class Pratica4 {
         prove = 3;
         Pratica4 u2 = new Pratica4(a, x0, b, d, prove);
         u2.testUniformita();
+        u2.testSeriale();
 
-
-
-        b = 19;
-        a = 3;
-        x0 = 11;
-        d = 64;
-        prove = 3;
-        Pratica4 s = new Pratica4(a, x0, b, d, prove);
-        s.testSeriale();
     }
 
 
