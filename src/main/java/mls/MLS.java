@@ -74,7 +74,14 @@ public class MLS {
         int prove = 3;
         Pratica4 u = new Pratica4(a, x0, b, d, prove);
         u.testUniformita();
-        u.testSeriale();
+
+        b = 19;
+        a = 3;
+        x0 = 11;
+        d = 64;
+        prove = 3;
+        Pratica4 s = new Pratica4(a, x0, b, d, prove);
+        s.testSeriale();
     }
 
 }

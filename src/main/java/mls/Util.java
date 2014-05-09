@@ -205,9 +205,9 @@ public class Util {
 
     public static double calcolaV(List<Double> l, double n, double ps) {
         double v = 0.0;
-        double nps = n * ps;
+        double valoreArreso = n * ps;
         for (int i = 0 ; i < l.size() ; i++)
-            v += Math.pow(l.get(i) - nps, 2) / nps;
+            v += Math.pow(l.get(i) - valoreArreso, 2) / valoreArreso;
         return v;
     }
 
@@ -225,20 +225,39 @@ public class Util {
         double z25 = Util.calcolaChiQuadro(df, Util.Z25);
         double z75 = Util.calcolaChiQuadro(df, Util.Z75);
 
-        if ( v >= z25 && v <= z75 ) return true;
+        if ( v >= z25 && v <= z75 )  {
+            System.out.println(z25 + " <= " + v + " <= " + z75 + " e' Accetabile");
+            return true;
+        }
+        else if ( v < z25 ) {
+            System.out.println(v + " < " + z25 + " e' Rigettato");
+        }
+        else if ( v > z75 )  {
+            System.out.println(v + " > " + z75 + " e' Rigettato");
+        };
         return false;
+    }
+
+
+    public static List<Double> calcolaFrequenze(List<Integer> s) {
+        LinkedHashMap<Integer, Double> f = new LinkedHashMap<Integer, Double>();
+        for (Integer v : s) {
+            double c = 1.0;
+            if ( f.containsKey(v))
+                c += f.get(v);
+            f.put(v, c);
+        }
+
+        List<Double> l = new ArrayList<Double>();
+        for (Double v : f.values())
+            l.add(v);
+        return l;
     }
 
 
 
     public static double calcolaChiQuadro(double df, double za) {
-        double a = 1.0;
-        double b = 2.0 / (9.0 * df);
-        double c = za * Math.sqrt(2.0 / (9.0 * df));
-        double abc = a - b + c;
-        double cube = Math.pow(abc, 3);
-//        System.out.println(df * cube);
-        return (df * cube);
+        return (df * Math.pow(1.0 - (2.0 / (9.0 * df)) + (za * Math.sqrt(2.0 / (9.0 * df))), 3));
     }
 
 
@@ -387,14 +406,14 @@ public class Util {
             zn.add((int) Math.floor(d * rn));
 
         List<List<Integer>> sequenze = new ArrayList<List<Integer>>();
-        double size = zn.size() / parti;
+        double dimensioneSequenza = zn.size() / parti;
         int index = 0;
         for(int i=0; i < parti; i++) {
             if ( i < parti - 1)
-                sequenze.add(zn.subList(index, index + (int) size));
+                sequenze.add(zn.subList(index, index + (int) dimensioneSequenza));
             else
                 sequenze.add(zn.subList(index, zn.size()));
-            index += size;
+            index += dimensioneSequenza;
         }
         return sequenze;
     }

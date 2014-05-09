@@ -17,14 +17,6 @@ public class Pratica4 {
     private double d;
     private int prove;
 
-    /*public Pratica4(int a, int x0, int m, double d, int prove) {
-       this.setA(a);
-       this.setX0(x0);
-       this.setM(m);
-       this.setD(d);
-       this.setProve(prove);
-    } */
-
     public Pratica4(int a, int x0, int b, double d, int prove) {
         this.setA(a);
         this.setX0(x0);
@@ -41,24 +33,19 @@ public class Pratica4 {
 
         int successi = 0;
         for (List<Integer> sottoSequenza : sequenze ) {
-            LinkedHashMap<Integer, Double> frequenze = new LinkedHashMap<Integer, Double>();
-            for (Integer v : sottoSequenza) {
-                double c = 1.0;
-                if ( frequenze.containsKey(v))
-                    c += frequenze.get(v);
-                frequenze.put(v, c);
-            }
 
-            List<Double> l = new ArrayList<Double>();
-            for (Double v : frequenze.values())
-                l.add(v);
+            List<Double> l = Util.calcolaFrequenze(sottoSequenza);
 
             double v = Util.calcolaV(l, sottoSequenza.size(), 1 / this.getD());
-            if( Util.controllaV(v, this.getD()-1)) successi++;
+            if( Util.controllaV(v, this.getD()-1)) {
+                successi++;
+            }
          }
 
         System.out.println("Risulta Accettabile " + successi + " volte su " +  sequenze.size() + "\n");
     }
+
+
 
     public void testSeriale() {
         System.out.println("--Il Test Seriale dato [a=" + this.getA() + "]" + "[x0=" + this.getX0() + "]" + "[b=" + this.getB() + "]"+ "[d=" + this.getD() + "]"+ "[prove=" + this.getProve()+ "]");
@@ -81,37 +68,44 @@ public class Pratica4 {
             double v1 = Util.calcolaVSeriale(matrix1, (double) sequenza.size()/2, (double) 1/dd);
             double v2 = Util.calcolaVSeriale(matrix2, (double) sequenza.size()/2, (double) 1/dd);
 
-            if ( Util.controllaV(v1, dd-1) ) successi++;
-            if ( Util.controllaV(v2, dd-1) ) successi++;
+            if ( Util.controllaV(v1, dd-1) )  {
+                successi++;
+            }
+            if ( Util.controllaV(v2, dd-1) ) {
+                successi++;
+            }
         }
 
         System.out.println("Risulta Accettabile " + successi + " volte su " +  sequenze.size() * 2 );
     }
 
-    public static void main(String args[]) {
-        /*int a = 65;
-        int x0 = 3;
-        int b = 19;
-        double d = 64.0;
-        int prove = 3;
-        int m = (int) Math.pow(2.0, b);
-        Pratica4 u = new Pratica4(a, x0, m, d, prove);
-        boolean[] proveUniformita = u.uniformita();
-        for(boolean tests : proveUniformita)
-            System.out.println(tests);
-         */
 
+    public static void main(String args[]) {
         int b = 19;
-        int a = 85;
-        int x0 = 3;
+        int a = 79;
+        int x0 = 1;
         int d = 64;
         int prove = 3;
-        Pratica4 u = new Pratica4(a, x0, b, d, prove);
-        u.testUniformita();
-        u.testSeriale();
+        Pratica4 u1 = new Pratica4(a, x0, b, d, prove);
+        u1.testUniformita();
 
+        b = 19;
+        a = 15;
+        x0 = 1;
+        d = 64;
+        prove = 3;
+        Pratica4 u2 = new Pratica4(a, x0, b, d, prove);
+        u2.testUniformita();
+
+
+
+        b = 19;
+        a = 3;
+        x0 = 11;
+        d = 64;
+        prove = 3;
         Pratica4 s = new Pratica4(a, x0, b, d, prove);
-        //s.seriale();
+        s.testSeriale();
     }
 
 
